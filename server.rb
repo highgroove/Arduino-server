@@ -3,34 +3,41 @@ require 'sinatra'
 require 'json'
 require 'haml'
 
-params = {}
+query = {}
 
-get '/led' do
-  haml :led
+get '/' do
+  haml :root
 end
 
 post '/led/start' do
-  params.merge! :led => true
+  query.merge! :led => true
   redirect '/led'
 end
 
 post '/led/stop' do
-  params.merge! :led => false
+  query.merge! :led => false
   redirect '/led'
 end
 
 get '/query.json' do
   content_type :json
-  params.to_json
+  query.to_json
+end
+
+post '/servo' do
+  query.merge! :servo_angle => params[:angle]
 end
 
 __END__
-@@ led
+@@ root
 %html
   %head
-    %title Control LED
+    %title Control Arduino
   %body
     %form(action='/led/start' method='POST')
       %input(type='submit' value='Turn on')
     %form(action='/led/stop' method='POST')
       %input(type='submit' value='Turn off')
+    %form(action='/servo' method='POST')
+      %input(type='text' name='angle')
+      %input(type='submit' value='Turn servo (-180-180)')
